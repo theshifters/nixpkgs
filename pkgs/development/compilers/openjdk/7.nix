@@ -131,6 +131,8 @@ let
          --replace XXX_PAXFLAGS_XXX ${paxflags}
     '';
 
+    buildFlags = [ "all" "DISABLE_HOTSPOT_OS_VERSION_CHECK=ok" ];
+
     installPhase = ''
       mkdir -p $out/lib/openjdk $out/share $jre/lib/openjdk
 
@@ -153,6 +155,11 @@ let
       mv $out/lib/openjdk/jre $jre/lib/openjdk/
       mkdir $out/lib/openjdk/jre
       lndir $jre/lib/openjdk/jre $out/lib/openjdk/jre
+
+      # Make sure cmm/*.pf are not symlinks:
+      # https://youtrack.jetbrains.com/issue/IDEA-147272
+      rm -rf $out/lib/openjdk/jre/lib/cmm
+      ln -s {$jre,$out}/lib/openjdk/jre/lib/cmm
 
       rm -rf $out/lib/openjdk/jre/bin
       ln -s $out/lib/openjdk/bin $out/lib/openjdk/jre/bin
